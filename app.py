@@ -10,12 +10,13 @@ num = st.number_input("Choisis un nombre entre 0 et 7"
                       , min_value=0
                       , max_value=7)
 
-slider_value = st.slider( "Pick a year"
+birth_year = st.slider( "Pick a Birthyear"
                          ,min_value=1950
                          ,max_value=2025)
 
 if st.button("Click me"): 
     st.balloons()
+    st.write(f"Tu as {2025 -  birth_year} ans ! ")
     st.write(f"Hello {nom}")
 
 st.markdown("""
