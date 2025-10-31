@@ -40,7 +40,8 @@ def load_data(drop_na: bool = True) -> Tuple[pd.DataFrame, pd.DataFrame]:
 
 
 def compute_nan_counts(raw_df: pd.DataFrame) -> pd.DataFrame:
-    cache_key = f"compute_nan_counts_{id(raw_df)}"
+    # Note: Cache key simplified - in production, consider using DataFrame hash
+    cache_key = "compute_nan_counts"
     cached = cache.get(cache_key)
     if cached is not None:
         return cached

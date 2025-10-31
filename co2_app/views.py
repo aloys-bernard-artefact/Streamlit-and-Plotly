@@ -193,10 +193,16 @@ def time_series(request):
 def download_csv(request):
     """Download CSV data for selected country and year range"""
     clean_df, _raw = load_data(True)
+    
+    def _int_safe(name: str, default: int) -> int:
+        try:
+            return int(request.GET.get(name, default))
+        except (ValueError, TypeError):
+            return default
 
     country = request.GET.get("country", "")
-    start_year = int(request.GET.get("start_year", int(clean_df[YEAR_COL].min())))
-    end_year = int(request.GET.get("end_year", int(clean_df[YEAR_COL].max())))
+    start_year = _int_safe("start_year", int(clean_df[YEAR_COL].min()))
+    end_year = _int_safe("end_year", int(clean_df[YEAR_COL].max()))
 
     df = clean_df[(clean_df[COUNTRY_COL] == country) &
                   (clean_df[YEAR_COL] >= start_year) &
