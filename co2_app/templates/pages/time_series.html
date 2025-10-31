@@ -1,0 +1,59 @@
+{% extends 'base.html' %}
+
+{% block sidebar %}
+<a href="/" class="btn btn-outline-secondary w-100 mb-3">← Back to dashboard</a>
+<form method="get" action="/pages/time-series">
+  <div class="mb-3">
+    <label class="form-label">Country</label>
+    <select class="form-select" name="country">
+      {% for c in countries %}
+        <option value="{{ c }}" {% if c == selected_country %}selected{% endif %}>{{ c }}</option>
+      {% endfor %}
+    </select>
+  </div>
+  <div class="mb-3">
+    <label class="form-label">Year range</label>
+    <div class="d-flex gap-2">
+      <input type="number" class="form-control" name="start_year" value="{{ start_year }}" min="{{ min_year }}" max="{{ max_year }}">
+      <input type="number" class="form-control" name="end_year" value="{{ end_year }}" min="{{ min_year }}" max="{{ max_year }}">
+    </div>
+  </div>
+  <div class="mb-3">
+    <label class="form-label">Rolling mean window (years)</label>
+    <input type="number" class="form-control" name="rolling" value="{{ rolling_window }}" min="1" max="25">
+  </div>
+  <div class="form-check mb-2">
+    <input class="form-check-input" type="checkbox" id="log" name="log" value="1" {% if use_log %}checked{% endif %}>
+    <label class="form-check-label" for="log">Log scale (y-axis)</label>
+  </div>
+  <div class="form-check mb-3">
+    <input class="form-check-input" type="checkbox" id="table" name="table" value="1" {% if show_table %}checked{% endif %}>
+    <label class="form-check-label" for="table">Show data table</label>
+  </div>
+  <button type="submit" class="btn btn-primary w-100">Apply</button>
+</form>
+{% endblock %}
+
+{% block content %}
+<h1>📈 CO2 Per Capita Time Series</h1>
+{% if fig_json %}
+  <div id="ts"></div>
+  <script>
+    const tsFig = JSON.parse({{ fig_json | safe }});
+    Plotly.newPlot('ts', tsFig.data, tsFig.layout, {responsive:true});
+  </script>
+  <a class="btn btn-outline-success mt-3" href="/pages/time-series/download?country={{ selected_country | urlencode }}&start_year={{ start_year }}&end_year={{ end_year }}">Download CSV</a>
+{% else %}
+  <div class="alert alert-warning">No data available for the selected filters.</div>
+{% endif %}
+
+{% if table_html %}
+  <h5 class="mt-4">Filtered Data</h5>
+  <div class="table-responsive bg-white border p-2">{{ table_html | safe }}</div>
+{% endif %}
+
+<hr>
+<p class="text-muted">Time series built without caching or code refactor per user instruction (mirrored behavior).</p>
+{% endblock %}
+
+

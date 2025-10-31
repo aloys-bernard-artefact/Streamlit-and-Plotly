@@ -1,0 +1,33 @@
+{% extends "base.html" %}
+
+{% block sidebar %}
+<h5 class="mb-3">Data Exploration</h5>
+<p class="small text-muted">Exploring the Iris dataset with a 3D scatter plot.</p>
+{% endblock %}
+
+{% block content %}
+<h1>🌍 Data Exploration</h1>
+<p class="lead">Interactive 3D visualization of the Iris dataset</p>
+
+{% if fig_json %}
+<div class="card mb-4">
+  <div class="card-body">
+    <div id="iris-chart"></div>
+  </div>
+</div>
+
+<script>
+  document.addEventListener('DOMContentLoaded', function() {
+    const irisFig = JSON.parse({{ fig_json | safe }});
+    Plotly.newPlot('iris-chart', irisFig.data, irisFig.layout, {responsive: true});
+  });
+</script>
+{% else %}
+<div class="alert alert-warning">No data available</div>
+{% endif %}
+
+<hr>
+<footer class="text-muted">
+  <small>Iris 3D scatter plot showing sepal and petal dimensions.</small>
+</footer>
+{% endblock %}

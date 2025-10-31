@@ -1,7 +1,16 @@
-data
-data*
+data/
+data/*.csv
 
 # Python
 .python-version
 .venv/
 __pycache__/
+
+# Django
+*.log
+*.pot
+*.pyc
+db.sqlite3
+db.sqlite3-journal
+/media
+/staticfiles

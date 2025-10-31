@@ -1,0 +1,90 @@
+{% extends 'base.html' %}
+
+{% block sidebar %}
+<form method="get" action="/">
+  <div class="mb-3">
+    <label class="form-label">Year range</label>
+    <div class="d-flex gap-2">
+      <input type="number" class="form-control" name="start_year" value="{{ start_year }}" min="{{ min_year }}" max="{{ max_year }}">
+      <input type="number" class="form-control" name="end_year" value="{{ end_year }}" min="{{ min_year }}" max="{{ max_year }}">
+    </div>
+    <div class="form-text">Bounds: {{ min_year }} - {{ max_year }}</div>
+  </div>
+  <div class="mb-3">
+    <label class="form-label">Top N emitters</label>
+    <input type="number" class="form-control" name="top_n" value="{{ top_n }}" min="1" max="30">
+  </div>
+  <div class="form-check mb-2">
+    <input class="form-check-input" type="checkbox" id="missing" name="show_missing" value="1" {% if show_missing %}checked{% endif %}>
+    <label class="form-check-label" for="missing">Show missing CO2 per country</label>
+  </div>
+  <div class="form-check mb-3">
+    <input class="form-check-input" type="checkbox" id="raw" name="show_raw" value="1" {% if show_raw %}checked{% endif %}>
+    <label class="form-check-label" for="raw">Show raw dataset head</label>
+  </div>
+  <button type="submit" class="btn btn-primary w-100">Apply</button>
+</form>
+<hr>
+<a href="/pages/data-exploration" class="btn btn-outline-secondary w-100 mb-2">Iris 3D (page)</a>
+<a href="/pages/time-series" class="btn btn-outline-secondary w-100">Time Series (page)</a>
+{% endblock %}
+
+{% block content %}
+<h1>🌍 CO2 Per Capita Explorer</h1>
+
+<section class="mb-4">
+  <h5>Dataset overview / schema</h5>
+  <pre style="max-height:220px; overflow:auto;" class="bg-white p-2 border">{{ info_text }}</pre>
+  <h6>Summary statistics</h6>
+  <div class="table-responsive bg-white border p-2">{{ describe_html | safe }}</div>
+</section>
+
+<section class="mb-4">
+  <h5>Distribution of CO2 Per Capita</h5>
+  <div id="hist"></div>
+  <script>
+    const histFig = JSON.parse({{ hist_json | safe }});
+    Plotly.newPlot('hist', histFig.data, histFig.layout, {responsive:true});
+  </script>
+  </section>
+
+<section class="mb-4">
+  <h5>Top Emitters (Average CO2 per Capita)</h5>
+  <div class="table-responsive bg-white border p-2 mb-3">{{ table_html | safe }}</div>
+  {% if bar_json %}
+    <div id="bar"></div>
+    <script>
+      const barFig = JSON.parse({{ bar_json | safe }});
+      Plotly.newPlot('bar', barFig.data, barFig.layout, {responsive:true});
+    </script>
+  {% else %}
+    <div class="alert alert-warning">No data in the selected year range.</div>
+  {% endif %}
+</section>
+
+{% if nan_table_html or nan_bar_json %}
+<section class="mb-4">
+  <h5>Countries with missing CO2 entries</h5>
+  {% if nan_table_html %}<div class="table-responsive bg-white border p-2 mb-3">{{ nan_table_html | safe }}</div>{% endif %}
+  {% if nan_bar_json %}
+    <div id="nan"></div>
+    <script>
+      const nanFig = JSON.parse({{ nan_bar_json | safe }});
+      Plotly.newPlot('nan', nanFig.data, nanFig.layout, {responsive:true});
+    </script>
+  {% endif %}
+</section>
+{% endif %}
+
+{% if raw_head_html %}
+<section class="mb-4">
+  <h5>Raw Data (first 20 rows)</h5>
+  <div class="table-responsive bg-white border p-2">{{ raw_head_html | safe }}</div>
+  </section>
+{% endif %}
+
+<hr>
+<p class="text-muted">Built from exploratory notebook: filtered by year, grouped by country, averaged and displayed as top N bar chart.</p>
+{% endblock %}
+
+

@@ -1,40 +1,40 @@
-# Flask version of CO2 Explorer
+# Django version of CO2 Explorer
 
-This adds a Flask app replicating the Streamlit app (`app.py`) and pages (`pages/`).
+This adds a Django app replicating the Streamlit app (`app.py`) and pages (`pages/`).
 
 ## Quick start
 
 1. Create venv and install deps:
 
 ```bash
-pyenv virtualenv 3.11.8 flask_app
-pyenv local flask_app
+pyenv virtualenv 3.11.8 django_app
+pyenv local django_app
 pip install -r requirements.txt
 ```
 
-2. Run the Flask app:
+2. Run the Django app:
 
 ```bash
-export FLASK_APP=flask_app.app:create_app
-export FLASK_RUN_PORT=8502
-export FLASK_DEBUG=1
-flask run
+python manage.py migrate
+python manage.py runserver 8502
 ```
 
 Open http://127.0.0.1:8502
 
 ## Structure
 
-- `flask_app/app.py`: app factory, cache, blueprints
-- `flask_app/config.py`: constants, dataset config
-- `flask_app/services/data.py`: data loading and aggregations
-- `flask_app/blueprints/main.py`: index route (dashboard)
-- `flask_app/blueprints/pages.py`: extra pages (data exploration, time series)
-- `flask_app/templates/…`: templates with Plotly charts via JSON
-- `flask_app/static/…`: Bootstrap helpers, confetti, simple snow CSS
+- `co2_explorer/`: Django project settings and URL configuration
+- `co2_app/`: Django application
+  - `views.py`: View functions (dashboard, data exploration, time series)
+  - `urls.py`: URL routing
+  - `config.py`: Constants and dataset configuration
+  - `data_service.py`: Data loading and aggregations with caching
+  - `templates/`: Templates with Plotly charts via JSON
+  - `static/`: Bootstrap helpers, confetti, simple snow CSS
 
 ## Notes
 
 - CSV is downloaded to `data/CO2_per_capita.csv` if missing (same as Streamlit).
 - Plotly-only rendering; no seaborn branch.
 - Use query params to control the UI (e.g., `?start_year=1980&end_year=2010&top_n=15`).
+- Django's built-in caching is used instead of Flask-Caching.
