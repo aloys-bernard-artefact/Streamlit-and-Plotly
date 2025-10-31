@@ -1,2 +1,7 @@
 data
 data*
+
+# Python
+.python-version
+.venv/
+__pycache__/
