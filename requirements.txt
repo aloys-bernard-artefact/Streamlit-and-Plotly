@@ -1,5 +1,4 @@
-Flask>=3.0.0
-Flask-Caching>=2.3.0
+Django>=5.0.0
 pandas>=2.2.0
 numpy>=1.26.0
 plotly>=5.24.0
